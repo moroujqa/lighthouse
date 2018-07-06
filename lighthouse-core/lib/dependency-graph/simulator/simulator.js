@@ -274,7 +274,10 @@ class Simulator {
     } else {
       // If we're estimating time remaining, we already acquired a connection for this record, definitely non-null
       const connection = /** @type {TcpConnection} */ (this._acquireConnection(record));
-      const dnsResolutionTime = this._dns.getTimeUntilResolution(record, timingData.startTime);
+      const dnsResolutionTime = this._dns.getTimeUntilResolution(record, {
+        requestedAt: timingData.startTime,
+        shouldUpdateCache: false,
+      });
       const timeAlreadyElapsed = timingData.timeElapsed;
       const calculation = connection.simulateDownloadUntil(
         record.transferSize - timingData.bytesDownloaded,
@@ -323,7 +326,10 @@ class Simulator {
     const record = node.record;
     // If we're updating the progress, we already acquired a connection for this record, definitely non-null
     const connection = /** @type {TcpConnection} */ (this._acquireConnection(record));
-    const dnsResolutionTime = this._dns.getTimeUntilResolution(record, timingData.startTime);
+    const dnsResolutionTime = this._dns.getTimeUntilResolution(record, {
+      requestedAt: timingData.startTime,
+      shouldUpdateCache: true,
+    });
     const calculation = connection.simulateDownloadUntil(
       record.transferSize - timingData.bytesDownloaded,
       {

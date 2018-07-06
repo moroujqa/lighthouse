@@ -5,7 +5,10 @@
  */
 'use strict';
 
-const DNS_RESOLUTION_RTT_MULTIPLIER = 1.5;
+// A DNS lookup will usually take 1 roundtrip, connection latency plus potentially extra DNS routing
+// Example: https://www.webpagetest.org/result/180703_3A_e33ec79747c002ed4d7bcbfc81462203/1/details/#waterfall_view_step1
+// All DNS lookups are 1-2 RTT times, usually 1-1.5
+const DNS_RESOLUTION_RTT_MULTIPLIER = 1;
 
 module.exports = class DNSCache {
   /**
@@ -30,12 +33,11 @@ module.exports = class DNSCache {
 
   /**
    * @param {LH.Artifacts.NetworkRequest} request
-   * @param {number=} requestedAt
+   * @param {{requestedAt: number, shouldUpdateCache: boolean}} options
    * @return {number}
    */
-  getTimeUntilResolution(request, requestedAt) {
-    const shouldUpdateCache = typeof requestedAt === 'undefined';
-    requestedAt = requestedAt || 0;
+  getTimeUntilResolution(request, options) {
+    const {requestedAt = 0, shouldUpdateCache = false} = options || {}
 
     const domain = request.parsedURL.host;
     const cacheEntry = this._resolvedDomainNames.get(domain);
