@@ -2,8 +2,8 @@
 
 exports[`Metrics: FCP should compute a simulated value 1`] = `
 Object {
-  "optimistic": 761,
-  "pessimistic": 761,
-  "timing": 1293,
+  "optimistic": 911,
+  "pessimistic": 911,
+  "timing": 911,
 }
 `;

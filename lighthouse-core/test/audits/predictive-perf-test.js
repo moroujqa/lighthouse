@@ -26,8 +26,8 @@ describe('Performance: predictive performance audit', () => {
 
     return PredictivePerf.audit(artifacts).then(output => {
       const metrics = output.details.items[0];
-      for (const [key, value] in Object.entries(metrics)) {
-        if (Number.isFinite(value)) metrics[key] = Math.round(value);
+      for (const [key, value] of Object.entries(metrics)) {
+        metrics[key] = Math.round(value);
       }
 
       expect(metrics).toMatchSnapshot();

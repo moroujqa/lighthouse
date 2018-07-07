@@ -8,6 +8,7 @@
 const NetworkNode = require('../../../../lib/dependency-graph/network-node');
 const CpuNode = require('../../../../lib/dependency-graph/cpu-node');
 const Simulator = require('../../../../lib/dependency-graph/simulator/simulator');
+const DNSCache = require('../../../../lib/dependency-graph/simulator/dns-cache');
 
 const assert = require('assert');
 let nextRequestId = 1;
@@ -35,6 +36,18 @@ function cpuTask({tid, ts, duration}) {
 
 /* eslint-env jest */
 describe('DependencyGraph/Simulator', () => {
+  // Insulate the simulator tests from DNS multiplier changes
+  let originalDNSMultiplier;
+
+  beforeAll(() => {
+    originalDNSMultiplier = DNSCache.RTT_MULTIPLIER;
+    DNSCache.RTT_MULTIPLIER = 1;
+  });
+
+  afterAll(() => {
+    DNSCache.RTT_MULTIPLIER = originalDNSMultiplier;
+  });
+
   describe('.simulate', () => {
     const serverResponseTimeByOrigin = new Map([['http://example.com', 500]]);
 

@@ -276,7 +276,7 @@ class Simulator {
       const connection = /** @type {TcpConnection} */ (this._acquireConnection(record));
       const dnsResolutionTime = this._dns.getTimeUntilResolution(record, {
         requestedAt: timingData.startTime,
-        shouldUpdateCache: false,
+        shouldUpdateCache: true,
       });
       const timeAlreadyElapsed = timingData.timeElapsed;
       const calculation = connection.simulateDownloadUntil(

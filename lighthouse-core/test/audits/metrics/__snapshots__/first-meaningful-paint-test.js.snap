@@ -4,9 +4,9 @@ exports[`Performance: first-meaningful-paint audit computes FMP correctly for si
 Object {
   "displayValue": Array [
     "%10d ms",
-    2186.1969000377458,
+    1354.506000038469,
   ],
-  "rawValue": 2186.1969000377458,
-  "score": 0.92,
+  "rawValue": 1354.506000038469,
+  "score": 1,
 }
 `;

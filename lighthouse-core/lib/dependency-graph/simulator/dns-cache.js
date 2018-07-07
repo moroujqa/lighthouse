@@ -5,12 +5,14 @@
  */
 'use strict';
 
-// A DNS lookup will usually take 1 roundtrip, connection latency plus potentially extra DNS routing
+// A DNS lookup will usually take ~1-2 roundtrips of connection latency plus the extra DNS routing time.
 // Example: https://www.webpagetest.org/result/180703_3A_e33ec79747c002ed4d7bcbfc81462203/1/details/#waterfall_view_step1
-// All DNS lookups are 1-2 RTT times, usually 1-1.5
-const DNS_RESOLUTION_RTT_MULTIPLIER = 1;
+// Example: https://www.webpagetest.org/result/180707_1M_89673eb633b5d98386de95dfcf9b33d5/1/details/#waterfall_view_step1
+// DNS is highly variable though, many times it's a little more than 1, but can easily be 4-5x RTT.
+// We'll use 2 since it seems to give the most accurate results on average, but this can be tweaked.
+const DNS_RESOLUTION_RTT_MULTIPLIER = 2;
 
-module.exports = class DNSCache {
+class DNSCache {
   /**
    * @param {{rtt: number}} options
    */
@@ -33,7 +35,7 @@ module.exports = class DNSCache {
 
   /**
    * @param {LH.Artifacts.NetworkRequest} request
-   * @param {{requestedAt: number, shouldUpdateCache: boolean}} options
+   * @param {{requestedAt: number, shouldUpdateCache: boolean}=} options
    * @return {number}
    */
   getTimeUntilResolution(request, options) {
@@ -41,7 +43,7 @@ module.exports = class DNSCache {
 
     const domain = request.parsedURL.host;
     const cacheEntry = this._resolvedDomainNames.get(domain);
-    let timeUntilResolved = this._rtt * DNS_RESOLUTION_RTT_MULTIPLIER;
+    let timeUntilResolved = this._rtt * DNSCache.RTT_MULTIPLIER;
     if (cacheEntry) {
       const timeUntilCachedIsResolved = Math.max(cacheEntry.resolvedAt - requestedAt, 0);
       timeUntilResolved = Math.min(timeUntilCachedIsResolved, timeUntilResolved);
@@ -74,8 +76,8 @@ module.exports = class DNSCache {
   setResolvedAt(domain, resolvedAt) {
     this._resolvedDomainNames.set(domain, {resolvedAt});
   }
-
-  static get RTT_MULTIPLIER() {
-    return DNS_RESOLUTION_RTT_MULTIPLIER;
-  }
 };
+
+DNSCache.RTT_MULTIPLIER = DNS_RESOLUTION_RTT_MULTIPLIER;
+
+module.exports = DNSCache;
